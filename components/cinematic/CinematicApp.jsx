@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { assetPath } from '@/lib/asset-path';
 import { WEDDING, weddingInstant } from '@/lib/wedding';
 
 /* ================================================================
@@ -101,88 +102,12 @@ function useCountdown() {
 }
 
 /* ---------- RSVP at the arch ---------- */
-// a v4 UUID that also works outside secure contexts (crypto.randomUUID needs HTTPS)
-function submissionId() {
-  const b = new Uint8Array(16);
-  crypto.getRandomValues(b);
-  b[6] = (b[6] & 0x0f) | 0x40;
-  b[8] = (b[8] & 0x3f) | 0x80;
-  const h = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
-  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
-}
-
 function RsvpForm() {
-  const [name, setName] = useState('');
-  const [count, setCount] = useState(1);
-  const [state, setState] = useState('idle');        // idle | sending | done | error
-  const [error, setError] = useState('');
-  const [saved, setSaved] = useState('');
-  const id = useRef(null);                             // kept across retries: the server ignores repeats
-  const nameIn = useRef(null);
-
-  const submit = async e => {
-    e.preventDefault();
-    if (state === 'sending') return;
-    const clean = name.replace(/\s+/g, ' ').trim();
-    if (!clean) { setError('من فضلك اكتب الاسم الكريم'); setState('error'); nameIn.current?.focus(); return; }
-    id.current ||= submissionId();
-    setState('sending');
-    setError('');
-    try {
-      const res = await fetch('/api/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': id.current },
-        body: JSON.stringify({ name: clean, count, id: id.current }),
-      });
-      if (!res.ok) throw new Error(String(res.status));
-      setSaved(clean);
-      setState('done');
-      nameIn.current?.blur();
-      // the confirmation is on screen first; the sky celebrates after
-      setTimeout(() => window.dispatchEvent(new CustomEvent('wedding:celebrate')), 350);
-    } catch {
-      setError('تعذّر حفظ التأكيد — تأكّد من الاتصال وحاول مرة أخرى');
-      setState('error');
-    }
-  };
-
-  const another = () => { id.current = null; setName(''); setCount(1); setSaved(''); setState('idle'); };
-  const scrollIntoView = e => { const el = e.currentTarget; setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 320); };
-
-  if (state === 'done') {
-    return (
-      <div className="cine-rsvp-done" role="status">
-        <HeartIcon />
-        <p className="cine-done-title">تم تأكيد حضورك يا {saved}</p>
-        <p className="cine-done-sub">بانتظاركم بفارغ الصبر 💛</p>
-        <button type="button" className="cine-link" onClick={another}>تأكيد حضور ضيف آخر</button>
-      </div>
-    );
-  }
   return (
-    <form className="cine-form" onSubmit={submit} noValidate data-no-swipe>
-      <label className="cine-field">
-        <span>الاسم الكريم</span>
-        <input
-          ref={nameIn} type="text" name="name" value={name} maxLength={80} autoComplete="name" enterKeyHint="send"
-          onChange={e => { setName(e.target.value); if (state === 'error') setState('idle'); }}
-          onFocus={scrollIntoView}
-          aria-invalid={state === 'error' && !name.trim() ? 'true' : undefined} aria-describedby="rsvp-msg"
-        />
-      </label>
-      <div className="cine-field">
-        <span id="rsvp-count-label">عدد الأفراد</span>
-        <div className="cine-stepper" role="group" aria-labelledby="rsvp-count-label">
-          <button type="button" className="cine-coin" onClick={() => setCount(c => Math.min(50, c + 1))} aria-label="زيادة العدد" disabled={count >= 50}>+</button>
-          <output aria-live="polite">{toArabic(count)}</output>
-          <button type="button" className="cine-coin" onClick={() => setCount(c => Math.max(1, c - 1))} aria-label="إنقاص العدد" disabled={count <= 1}>−</button>
-        </div>
-      </div>
-      <button type="submit" className="cine-btn cine-submit" disabled={state === 'sending'} aria-busy={state === 'sending'}>
-        <span>{state === 'sending' ? 'جارٍ الإرسال…' : 'أؤكّد حضوري'}</span><HeartIcon />
-      </button>
-      <p id="rsvp-msg" className="cine-msg" role="alert">{state === 'error' ? error : ''}</p>
-    </form>
+    <div className="cine-form" role="status" data-no-swipe>
+      <p className="cine-done-title">نتشرّف بحضوركم 💛</p>
+      <p className="cine-done-sub">تأكيد الحضور الإلكتروني غير متاح حاليًا. يُرجى التواصل مباشرةً مع العروسين لتأكيد الحضور.</p>
+    </div>
   );
 }
 
@@ -370,8 +295,8 @@ export default function CinematicApp({ photos = {} }) {
       {/* the pre-rendered still of the chapter: the first paint, and the whole picture without WebGL */}
       {!capture && (
         <picture className="cine-still" key={stillId} aria-hidden="true">
-          <source media="(min-aspect-ratio: 1/1)" srcSet={`/cinematic/stills/${stillId}-l.webp`} />
-          <img src={`/cinematic/stills/${stillId}-p.webp`} alt="" fetchPriority={stillId === 'door' ? 'high' : 'auto'} onError={e => { e.currentTarget.style.display = 'none'; }} />
+          <source media="(min-aspect-ratio: 1/1)" srcSet={assetPath(`/cinematic/stills/${stillId}-l.webp`)} />
+          <img src={assetPath(`/cinematic/stills/${stillId}-p.webp`)} alt="" fetchPriority={stillId === 'door' ? 'high' : 'auto'} onError={e => { e.currentTarget.style.display = 'none'; }} />
         </picture>
       )}
       <canvas className="cine-canvas" ref={canvas} aria-hidden="true" />

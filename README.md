@@ -80,3 +80,16 @@ npm run build && npm start   # النسخة النهائية
 ## ملاحظات
 - العدّ التنازلي بتوقيت القاهرة `Africa/Cairo` مهما كانت منطقة الزائر. ⚠ الساعة (16:00) **غير مؤكدة** — غيّرها في `lib/wedding.js` واجعل `timeConfirmed: true`.
 - `rsvp.json` يحتاج سيرفر Node دائم (`npm start`)؛ على Vercel لا يُحفظ.
+
+## GitHub Pages deployment
+
+The current version is a static site without a backend. Online RSVP, wish
+submission, and the private wishes reader are disabled; no guest information
+is sent or stored. The original API source is preserved in `backend-disabled/`
+outside the Next.js route tree. Existing JSON data is not exported.
+
+In repository Settings ? Pages, select GitHub Actions. The workflow builds
+with `output: 'export'` and publishes `out/`. It sets the repository base path
+for project sites, including public image and texture URLs. For a custom domain,
+the base path is empty. Locally run `npm run build` and serve `out/` using a
+static server; `next start` is not used for this version.

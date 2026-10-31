@@ -1,3 +1,4 @@
+import { assetPath } from '@/lib/asset-path';
 import fs from 'node:fs';
 import path from 'node:path';
 import CinematicApp from '@/components/cinematic/CinematicApp';
@@ -8,7 +9,7 @@ import './cinematic.css';
 function findPhoto(name) {
   for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
     const file = `${name}.${ext}`;
-    if (fs.existsSync(path.join(process.cwd(), 'public', 'assets', file))) return `/assets/${file}`;
+    if (fs.existsSync(path.join(process.cwd(), 'public', 'assets', file))) return assetPath(`/assets/${file}`);
   }
   return null;
 }

@@ -334,13 +334,7 @@ export default function GamesLayer({ hook, sceneRef, rootRef, chapter, index, go
       {view === 'quiz' && <Dialog label="تحدي العروسين" onBack={close} wide><Quiz name={name} reduced={reduced} onBack={close} /></Dialog>}
       {view === 'wish' && (
         <Dialog label="اكتب أمنيتك" onBack={close}>
-          <Wish
-            name={name}
-            onSent={() => {
-              close();
-              setTimeout(() => { sceneRef.current?.wishStar(); say('وصلت أمنيتك إلى أحمد وعبير', 'وها هي نجمتك تضيء سماءهما'); }, 450);
-            }}
-          />
+          <Wish />
         </Dialog>
       )}
       {view === 'penalty' && <Penalty name={name} tier={sceneRef.current?.tier} reduced={reduced} onBack={close} />}
