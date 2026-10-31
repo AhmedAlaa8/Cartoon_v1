@@ -1,0 +1,300 @@
+/* ================================================================
+   Cinematic preview (Stage 1) — portrait phone first.
+   Everything here is scoped to .cine / html.cine-mode so the other
+   themes are untouched.
+================================================================ */
+html.cine-mode,html.cine-mode body{height:100%;overflow:hidden;overscroll-behavior:none;background:#080f25}
+
+.cine{
+  --gold:#d6ad69;--gold-bright:#f1d6a5;--ivory:#f4eadd;--rose:#e9b5c1;--night:#080f25;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  position:fixed;inset:0;height:100vh;height:100svh;overflow:hidden;
+  touch-action:none;user-select:none;-webkit-user-select:none;
+  color:var(--ivory);font-family:var(--font-body),sans-serif;
+  background:linear-gradient(180deg,#050a1c 0%,#0b1638 55%,#22335f 100%);
+}
+.cine-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .8s var(--ease)}
+.cine.is-ready .cine-canvas{opacity:1}
+
+/* ---- chapters: typography floating in the scene, never boxes ---- */
+.cine-chapter{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:max(64px,9vh) 22px 120px;pointer-events:none;
+  opacity:0;transform:translateX(calc(var(--from, -1) * 26px));
+  transition:opacity .7s var(--ease) .35s,transform .9s var(--ease) .3s;
+  text-shadow:0 2px 18px rgba(5,10,28,.95),0 0 2px rgba(5,10,28,.6);
+}
+/* RTL: the next chapter arrives from the left, the previous from the right */
+.cine[data-dir="next"] .cine-chapter{--from:-1}
+.cine[data-dir="prev"] .cine-chapter{--from:1}
+.cine-chapter.is-active{opacity:1;transform:none}
+.cine-chapter:not(.is-active){transition-delay:0s;transition-duration:.35s}
+.cine-chapter.is-active *{pointer-events:auto}
+
+.cine-title{font-family:var(--font-calli),serif;font-weight:700;font-size:clamp(1.9rem,8vw,3rem);color:var(--ivory);line-height:1.5}
+.cine-eyebrow{font-family:var(--font-verse),serif;font-style:italic;color:var(--gold-bright);font-size:clamp(1rem,4.2vw,1.3rem)}
+.cine-text{max-width:30ch;line-height:2;font-weight:300;font-size:clamp(1rem,4.2vw,1.2rem);margin-top:14px}
+.cine-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cine-stage-note{
+  margin-top:auto;margin-bottom:auto;padding:18px 26px;border:1px dashed rgba(241,214,165,.45);border-radius:999px;
+  font-size:.9rem;color:var(--gold-bright);opacity:.85;line-height:1.8;
+}
+.cine-stage-note small{opacity:.7}
+
+/* door */
+.cine-door{justify-content:flex-end}
+.cine-hint{display:flex;flex-direction:column;align-items:center;gap:12px;font-size:1rem;color:var(--gold-bright)}
+
+/* countdown: floating numerals in the sky under the crescent, no cards */
+.cine-countdown{justify-content:flex-start;padding-top:41vh;padding-top:41svh}
+.cine-date{font-size:1.05rem;letter-spacing:.06em;color:var(--gold-bright);margin:2px 0 18px}
+.cine-count{display:flex;align-items:flex-start;gap:4px;direction:rtl}
+.cine-unit{display:flex;flex-direction:column;align-items:center;position:relative;min-width:68px}
+.cine-sep{position:absolute;inset-inline-start:-9px;top:.95em;font-size:.6rem;color:var(--gold)}
+.cine-num{
+  font-family:var(--font-body),sans-serif;font-weight:300;font-size:clamp(2.3rem,11vw,3.4rem);line-height:1.15;
+  color:var(--ivory);text-shadow:0 0 18px rgba(214,173,105,.55),0 2px 14px rgba(5,10,28,.95);
+  font-variant-numeric:tabular-nums;
+}
+.cine-lbl{font-size:.85rem;color:var(--gold-bright);opacity:.9}
+
+/* couple */
+.cine-couple{justify-content:flex-end;padding-bottom:max(120px,15vh)}
+.cine-pair{display:flex;align-items:center;gap:18px;margin-top:14px}
+.cine-person{display:flex;flex-direction:column;align-items:center;gap:10px}
+.cine-person figcaption{font-family:var(--font-calli),serif;font-size:1.15rem;color:var(--gold-bright)}
+.cine-medallion{
+  width:min(31vw,150px);aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 35%,#16234a,#070d22);
+  box-shadow:0 0 0 2px var(--gold),0 0 0 6px rgba(214,173,105,.18),0 0 28px rgba(214,173,105,.35);
+}
+.cine-medallion img{width:100%;height:100%;object-fit:cover}
+.cine-medallion svg{width:62%;fill:none;stroke:var(--gold-bright);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.cine-heart{font-size:1.6rem;color:var(--rose);text-shadow:0 0 16px rgba(233,181,193,.7)}
+
+/* rsvp */
+.cine-rsvp{justify-content:flex-start}
+
+/* sky */
+.cine-sky{justify-content:flex-start;padding-top:max(90px,14vh)}
+.cine-verse{font-family:var(--font-verse),serif;font-size:clamp(1.25rem,5.6vw,1.7rem);line-height:2;max-width:22ch;color:var(--ivory)}
+.cine-wish{margin-top:22px;font-size:.95rem;color:var(--gold-bright);opacity:.9}
+
+/* ---- navigation: quiet arrows and dots ---- */
+.cine-nav{
+  position:absolute;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom));z-index:5;
+  display:flex;align-items:center;justify-content:space-between;padding:0 14px;pointer-events:none;
+}
+.cine-nav > *{pointer-events:auto}
+/* (arrows and dots: see «objects» below) */
+
+@media (min-aspect-ratio: 1/1){
+  .cine-chapter{padding-top:max(48px,8vh)}
+  .cine-chapter.cine-countdown{padding-top:44vh}     /* under the crescent, not over it */
+  .cine-count{gap:18px}
+}
+@media (prefers-reduced-motion: reduce){
+  .cine-chapter,.cine-canvas{transition:opacity .4s linear;transform:none}
+}
+
+/* venue — part of the RSVP chapter: a flourish, the hall, a glowing pill to the map */
+.cine-venue{display:flex;flex-direction:column;align-items:center;margin-top:18px}
+.cine-flourish{width:min(220px,60vw);height:auto;fill:none;stroke:var(--gold);stroke-width:1.2;opacity:.85}
+.cine-flourish path:last-child{fill:var(--gold);stroke:none}
+.cine-venue-name{font-family:var(--font-calli),serif;font-size:clamp(1.5rem,6.6vw,2rem);color:var(--ivory);margin-top:6px;line-height:1.4}
+.cine-venue-name bdi{font-family:var(--font-verse),serif;letter-spacing:.04em}
+.cine-venue-city{font-size:1rem;color:var(--gold-bright);opacity:.9}
+.cine-map{margin-top:14px}
+
+
+/* ================================================================
+   Objects — every control is a small gold-and-enamel object from
+   the same world: bevelled, with real thickness, a cast shadow and
+   a warm glow; pressed, it sinks in and lights up.
+   Palette: champagne gold, warm ivory, deep navy enamel.
+================================================================ */
+.cine{
+  --g-hi:#fff4d6;--g-1:#f7e2ad;--g-2:#e3c27e;--g-3:#c99a4b;--g-lo:#7c5622;
+  --enamel-hi:#2a3f7c;--enamel:#111d45;--enamel-lo:#0a1230;
+  -webkit-tap-highlight-color:transparent;
+}
+.cine-icon{display:block;flex:none;filter:drop-shadow(0 1px 1px rgba(60,35,5,.35))}
+
+/* — the gold jewel button (map, RSVP) — */
+.cine-btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:56px;padding:0 28px 3px;border:0;border-radius:999px;cursor:pointer;isolation:isolate;
+  font-family:var(--font-body),sans-serif;font-weight:700;font-size:1.06rem;color:#2b1a04;text-decoration:none;
+  text-shadow:0 1px 0 rgba(255,246,222,.7);
+  background:
+    radial-gradient(120% 90% at 50% -20%,rgba(255,255,255,.75),rgba(255,255,255,0) 55%),
+    linear-gradient(180deg,var(--g-1) 0%,var(--g-2) 50%,var(--g-3) 100%);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,251,238,.95),
+    inset 0 -3px 0 rgba(124,86,34,.45),
+    inset 0 0 0 1px rgba(150,105,40,.5),
+    0 5px 0 -.5px var(--g-lo),
+    0 11px 22px rgba(4,8,22,.55),
+    0 0 34px rgba(227,194,126,.26);
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease),filter .16s;
+}
+/* a soft gold bloom that wakes when pressed */
+.cine-btn::after{
+  content:"";position:absolute;inset:-10px;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:radial-gradient(closest-side,rgba(255,222,150,.55),rgba(255,222,150,0));
+  opacity:0;transform:scale(.9);transition:opacity .25s,transform .35s var(--ease);
+}
+.cine-btn:active,.cine-btn.is-pressed{
+  transform:translateY(4px);filter:brightness(1.07);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,251,238,.8),
+    inset 0 -1px 0 rgba(124,86,34,.4),
+    inset 0 0 0 1px rgba(150,105,40,.55),
+    inset 0 3px 8px rgba(124,86,34,.35),
+    0 1px 0 -.5px var(--g-lo),
+    0 4px 10px rgba(4,8,22,.5),
+    0 0 48px rgba(255,214,140,.55);
+}
+.cine-btn:active::after,.cine-btn.is-pressed::after{opacity:1;transform:scale(1)}
+.cine-btn:focus-visible{outline:none;box-shadow:inset 0 1.5px 0 rgba(255,251,238,.95),inset 0 -3px 0 rgba(124,86,34,.45),0 5px 0 -.5px var(--g-lo),0 0 0 3px var(--enamel-lo),0 0 0 5.5px var(--g-hi),0 0 30px rgba(255,214,140,.6)}
+@media (hover:hover){.cine-btn:hover{filter:brightness(1.05)}}
+.cine-btn[aria-disabled="true"]{cursor:default}
+
+/* RSVP call to action sits low, on the aisle before the arch */
+.cine-rsvp-cta{margin-top:auto;margin-bottom:max(76px,9vh);display:flex;flex-direction:column;align-items:center;gap:8px}
+.cine-stage-small{font-size:.78rem;color:var(--gold-bright);opacity:.75}
+
+/* — the door coin: gold, engraved key, a slow breath of light — */
+.cine-enter{
+  position:relative;width:76px;height:76px;padding:0;border:0;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:
+    radial-gradient(circle at 36% 28%,rgba(255,255,255,.85),rgba(255,255,255,0) 32%),
+    radial-gradient(circle at 50% 50%,var(--g-1) 0 52%,var(--g-2) 53% 60%,var(--g-3) 61% 66%,var(--g-1) 67% 72%,var(--g-3) 73% 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,251,238,.9),
+    inset 0 -3px 2px rgba(124,86,34,.55),
+    0 5px 0 -1px var(--g-lo),
+    0 12px 24px rgba(4,8,22,.6),
+    0 0 40px rgba(255,214,140,.45);
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease);
+}
+.cine-enter::before{   /* breathing aura */
+  content:"";position:absolute;inset:-8px;border-radius:50%;pointer-events:none;
+  border:1.5px solid rgba(255,230,170,.7);animation:cineAura 2.4s ease-out infinite;
+}
+@keyframes cineAura{0%{transform:scale(.92);opacity:.9}100%{transform:scale(1.45);opacity:0}}
+.cine-enter:active{transform:translateY(4px) scale(.98);box-shadow:inset 0 2px 0 rgba(255,251,238,.8),inset 0 3px 8px rgba(124,86,34,.45),0 1px 0 -1px var(--g-lo),0 4px 10px rgba(4,8,22,.55),0 0 60px rgba(255,214,140,.75)}
+.cine-enter:focus-visible{outline:none;box-shadow:0 5px 0 -1px var(--g-lo),0 0 0 3px var(--enamel-lo),0 0 0 6px var(--g-hi),0 0 40px rgba(255,214,140,.6)}
+
+/* — navigation: gold medallions with navy enamel, gold beads — */
+.cine-arrow{
+  position:relative;width:52px;height:52px;padding:0;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--g-1);
+  border:3px solid transparent;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(255,255,255,.16),rgba(255,255,255,0) 45%) padding-box,
+    radial-gradient(circle at 50% 42%,var(--enamel-hi) 0%,var(--enamel) 58%,var(--enamel-lo) 100%) padding-box,
+    conic-gradient(from 210deg,var(--g-lo),var(--g-hi),var(--g-3),var(--g-1),var(--g-lo),var(--g-2),var(--g-hi),var(--g-lo)) border-box;
+  box-shadow:inset 0 -2px 5px rgba(0,0,0,.55),0 3px 0 -.5px #5e4218,0 8px 16px rgba(4,8,22,.6),0 0 18px rgba(227,194,126,.18);
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease),opacity .3s;
+}
+.cine-arrow::before{content:"";position:absolute;inset:3px;border-radius:50%;border:1px solid rgba(227,194,126,.35);pointer-events:none}
+.cine-arrow svg{filter:drop-shadow(0 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 4px rgba(255,214,140,.45))}
+.cine-arrow:active{transform:translateY(3px);box-shadow:inset 0 2px 6px rgba(0,0,0,.6),0 0 0 -.5px #5e4218,0 3px 8px rgba(4,8,22,.5),0 0 30px rgba(255,214,140,.55)}
+.cine-arrow:focus-visible{outline:none;box-shadow:0 0 0 3px var(--enamel-lo),0 0 0 5.5px var(--g-hi),0 0 24px rgba(255,214,140,.55)}
+.cine-arrow:disabled{opacity:0;pointer-events:none}
+
+.cine-dots{display:flex;gap:11px;align-items:center}
+.cine-dot{
+  position:relative;width:12px;height:12px;padding:0;border:0;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 35% 30%,#4a62a8,var(--enamel) 62%,var(--enamel-lo));
+  box-shadow:0 0 0 1.5px var(--g-3),0 2px 4px rgba(0,0,0,.55);
+  transition:width .45s var(--ease),background .45s,box-shadow .45s;
+}
+.cine-dot.is-active{
+  width:30px;border-radius:8px;
+  background:radial-gradient(120% 140% at 35% 15%,var(--g-hi),var(--g-2) 45%,var(--g-3) 80%,var(--g-lo));
+  box-shadow:0 0 0 1px rgba(124,86,34,.7),0 2px 4px rgba(0,0,0,.5),0 0 14px rgba(227,194,126,.6);
+}
+.cine-dot::after{content:"";position:absolute;inset:-14px -5px}
+.cine-dot:focus-visible{outline:none;box-shadow:0 0 0 2px var(--enamel-lo),0 0 0 4px var(--g-hi)}
+
+@media (prefers-reduced-motion: reduce){
+  .cine-enter::before{animation:none;opacity:.6}
+  .cine-btn,.cine-enter,.cine-arrow{transition:none}
+}
+
+/* ================================================================
+   Stages 3–6: stills, names, countdown digits, the RSVP at the arch
+================================================================ */
+/* the chapter's pre-rendered still: first paint, and the picture without WebGL */
+.cine-still{position:absolute;inset:0;display:block;animation:cineFade .6s var(--ease)}
+.cine-still img{width:100%;height:100%;object-fit:cover;display:block}
+.cine.is-ready .cine-still{opacity:0;transition:opacity .9s var(--ease) .2s;pointer-events:none}
+@keyframes cineFade{from{opacity:0}}
+/* capture mode (?still=1): the world only */
+.cine.is-capture .cine-chapter,.cine.is-capture .cine-nav{display:none}
+.cine.is-capture .cine-canvas{transition:none}
+
+/* names: the eyebrow at the top, the sky free for the fireworks; after them a quiet line, a replay, a hint */
+.cine-names{justify-content:flex-start}
+.cine-names-rest{margin-top:auto;margin-bottom:max(86px,10vh);display:flex;flex-direction:column;align-items:center;gap:12px;animation:cineFade 1.4s var(--ease)}
+.cine-names-caption{font-family:var(--font-calli),serif;font-weight:700;font-size:clamp(1.6rem,7vw,2.2rem);color:var(--ivory);text-shadow:0 0 22px rgba(214,173,105,.6),0 2px 14px rgba(5,10,28,.95)}
+.cine-names-caption span{color:var(--rose);font-size:.7em}
+.cine-tip{font-size:.85rem;color:var(--gold-bright);opacity:.85}
+.cine-btn.cine-small{min-height:48px;font-size:.95rem;padding:0 22px 3px}
+
+/* countdown: each digit rises gently into place */
+.cine-num{display:inline-block;animation:cineDigit .5s var(--ease)}
+@keyframes cineDigit{from{opacity:0;transform:translateY(-.25em);filter:blur(2px)}}
+
+/* couple: the title above the hanging medallions */
+.cine-couple{justify-content:flex-start;padding-top:max(70px,9vh)}
+
+/* RSVP: content scrolls inside itself when the keyboard takes half the screen */
+.cine-rsvp{padding:0;justify-content:flex-start}
+.cine-rsvp-scroll{
+  width:100%;height:calc(var(--vvh, 100svh) - 0px);max-height:100%;overflow-y:auto;overscroll-behavior:contain;
+  touch-action:pan-y;-webkit-overflow-scrolling:touch;user-select:text;-webkit-user-select:text;
+  display:flex;flex-direction:column;align-items:center;padding:max(56px,7vh) 22px 120px;
+  /* a soft pool of night behind the words — readable over the flowers, no box */
+  background:radial-gradient(70% 60% at 50% 46%,rgba(6,11,30,.62),rgba(6,11,30,0) 72%);
+}
+.cine-rsvp .cine-title{font-size:clamp(1.7rem,7.4vw,2.6rem)}
+.cine-venue{margin-top:4px}
+.cine-form{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:22px;width:min(330px,100%)}
+.cine-field{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;font-size:.92rem;color:var(--gold-bright)}
+.cine-field input{
+  width:100%;min-height:54px;padding:0 22px;border-radius:999px;text-align:center;
+  font:inherit;font-size:1.08rem;color:var(--ivory);caret-color:var(--g-1);
+  border:2px solid transparent;
+  background:
+    radial-gradient(120% 140% at 50% 0%,rgba(255,255,255,.06),rgba(255,255,255,0) 50%) padding-box,
+    linear-gradient(180deg,#0b1434,#121f4a) padding-box,
+    linear-gradient(180deg,var(--g-hi),var(--g-3) 50%,var(--g-lo)) border-box;
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.55),0 6px 16px rgba(4,8,22,.45);
+  transition:box-shadow .25s;
+}
+.cine-field input:focus{outline:none;box-shadow:inset 0 3px 8px rgba(0,0,0,.55),0 0 0 3px rgba(255,214,140,.25),0 0 26px rgba(255,214,140,.35)}
+.cine-field input[aria-invalid="true"]{border-color:transparent;box-shadow:inset 0 3px 8px rgba(0,0,0,.55),0 0 0 3px rgba(255,170,160,.55)}
+.cine-stepper{display:flex;align-items:center;gap:18px}
+.cine-stepper output{min-width:2.4ch;font-size:1.6rem;font-weight:700;color:var(--ivory);text-align:center}
+.cine-coin{
+  width:50px;height:50px;border-radius:50%;border:0;cursor:pointer;padding:0 0 3px;
+  font:700 1.5rem/1 var(--font-body),sans-serif;color:#2b1a04;
+  background:radial-gradient(circle at 36% 28%,rgba(255,255,255,.8),rgba(255,255,255,0) 34%),radial-gradient(circle,var(--g-1) 0 58%,var(--g-3) 60% 100%);
+  box-shadow:inset 0 2px 0 rgba(255,251,238,.9),inset 0 -2px 2px rgba(124,86,34,.5),0 4px 0 -.5px var(--g-lo),0 8px 14px rgba(4,8,22,.55);
+  transition:transform .14s var(--ease),box-shadow .14s var(--ease);
+}
+.cine-coin:active{transform:translateY(3px);box-shadow:inset 0 3px 7px rgba(124,86,34,.45),0 1px 0 -.5px var(--g-lo),0 0 26px rgba(255,214,140,.55)}
+.cine-coin:disabled{opacity:.45;cursor:default}
+.cine-coin:focus-visible{outline:none;box-shadow:0 0 0 3px var(--enamel-lo),0 0 0 5.5px var(--g-hi)}
+.cine-submit{min-width:220px;margin-top:4px}
+.cine-btn:disabled{filter:saturate(.7) brightness(.92);cursor:progress}
+.cine-msg{min-height:1.4em;font-size:.95rem;color:#ffc4b8;font-weight:700}
+.cine-rsvp-done{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:26px;animation:cineFade .6s var(--ease)}
+.cine-rsvp-done .cine-icon{width:40px;height:36px}
+.cine-done-title{font-family:var(--font-calli),serif;font-size:clamp(1.4rem,6.4vw,1.9rem);color:var(--ivory)}
+.cine-done-sub{color:var(--gold-bright)}
+.cine-link{margin-top:10px;min-height:44px;padding:0 14px;background:none;border:0;color:var(--gold-bright);font:inherit;text-decoration:underline;text-underline-offset:4px;cursor:pointer}

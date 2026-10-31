@@ -1,0 +1,11 @@
+/* Global base — the invitation's own styles live in app/cinematic.css. */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#080f25}
+body{
+  font-family:var(--font-body),sans-serif;
+  color:#f4eadd;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit}
+::selection{background:#d6ad69;color:#1a1304}
+:focus-visible{outline:2px solid #f1d6a5;outline-offset:3px}

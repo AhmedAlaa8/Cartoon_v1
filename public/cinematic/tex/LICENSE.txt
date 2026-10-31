@@ -1,0 +1,4 @@
+walnut_*.webp — "Black Walnut Veneer 02" by Jenelle van Heerden, Poly Haven
+https://polyhaven.com/a/black_walnut_veneer_02
+License: CC0 1.0 (public domain) — https://polyhaven.com/license
+Modified: rotated 90° (grain vertical), normal map re-oriented, re-encoded as WebP.
